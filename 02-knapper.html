@@ -19,10 +19,24 @@
         margin: 2%;
         padding: 2%;
       }
+      nav {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+      }
+      .valgt {
+        background-color: brown;
+      }
     </style>
   </head>
   <body>
     <h1>Persongalleri</h1>
+    <nav>
+      <button data-troende="alle">Alle</button>
+      <button data-troende="ja" class="valgt">Troende</button>
+      <button data-troende="nej">Ikke troende</button>
+      <button data-troende="tvivler">Tvivler</button>
+    </nav>
     <main></main>
     <template>
       <article>
@@ -40,11 +54,13 @@
           "x-apikey": "600fe9211346a1524ff12e31",
         },
       };
+      let personer;
+      let filter = "ja";
 
       async function hentdata() {
-        const resultat = await fetch(url, options);
-        const json = await resultat.json();
-        vis(json);
+        const JSONdata = await fetch(url, options);
+        personer = await JSONdata.json();
+        visPersoner();
       }
 
       hentdata();
@@ -52,18 +68,20 @@
       const main = document.querySelector("main");
       const template = document.querySelector("template").content;
 
-      function vis(json) {
-        console.log(json);
-        json.forEach((person) => {
-          let klon = template.cloneNode(true);
-          klon.querySelector(".navn").textContent =
-            person.fornavn + person.efternavn;
-          klon.querySelector(".kortbeskrivelse").textContent =
-            "Email: " + person.email;
-          klon.querySelector(".pris").textContent =
-            "Troende: " + person.troende;
-          klon.querySelector("img").src = "faces/" + person.billede;
-          main.appendChild(klon);
+      function visPersoner() {
+        console.log("visPerson");
+        personer.forEach((person) => {
+          if (filter == person.troende) {
+            let klon = template.cloneNode(true);
+            klon.querySelector(".navn").textContent =
+              person.fornavn + person.efternavn;
+            klon.querySelector(".kortbeskrivelse").textContent =
+              "Email: " + person.email;
+            klon.querySelector(".pris").textContent =
+              "Troende: " + person.troende;
+            klon.querySelector("img").src = "faces/" + person.billede;
+            main.appendChild(klon);
+          }
         });
       }
     </script>
